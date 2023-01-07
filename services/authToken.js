@@ -10,20 +10,26 @@ module.exports.credentialsGenerate = (username) => {
     return key;
 };
 module.exports.credentialsVerify = async (key) => {
-    await new Promise((resolve, reject) => {
-        if (!key) {
-            reject('Empty acces token');
-            return;
-        }
-        jwt.verify(key, Buffer.from(secretKey, 'base64'), (err, user) => {
-            if (err) {
-                console.log(err);
-                reject('TokenExpiredError');
-            } else
-                resolve();
+    try {
+        let username = await new Promise((resolve, reject) => {
+            if (!key) {
+                reject('Empty acces token');
+                return;
+            }
+            jwt.verify(key, Buffer.from(secretKey, 'base64'), (err, user) => {
+                if (err) {
+                    console.log(err);
+                    reject('TokenExpiredError');
+                } else
+                    resolve(user);
+            });
         });
-    });
-    return key;
+    } catch (e) {
+        return null;
+    }
+    console.log(username);
+    return username;
+
 };
 
 
